@@ -1,5 +1,4 @@
-﻿using Common.Logging;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Project.Domain.IRepositories;
 using Project.Infrastructure.DataSources.SqlDB;
@@ -10,22 +9,18 @@ namespace Project.Infrastructure
 {
     public static class ServiceCollectionEx
     {
-        public static IServiceCollection AddInfraServices(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddInfraServices(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            // Logging centralizado (Seq, etc.)
-            services.AddLoggingServices(configuration);
+            // DB
+            services.AddScoped<IProjectDb, ProjectDb>();
 
-            // Fábrica genérica por tipo: usa connection string con el nombre del tipo (Project, etc.)
-            services.AddSingleton(typeof(GenericConfigurationSqlDbConnectionFactory<>));
-
-            // Wrapper Dapper genérico
-            services.AddScoped(typeof(IGenericDB<>), typeof(GenericDB<>));
-
-            // DB tipada para Project
-            services.AddScoped<IProjectDb, ProjectDB>();
-
-            //Repo de usuarios
-            services.AddScoped<IUsersRepository, UsersRepository>();
+            // Repositories
+            services.AddScoped<IUserRepository, UsersRepository>();
+            services.AddScoped<ILoanRepository, LoanRepository>();
+            services.AddScoped<IResourceRepository, ResourceRepository>();
+            services.AddScoped<IPenaltyRepository, PenaltyRepository>();
 
             return services;
         }

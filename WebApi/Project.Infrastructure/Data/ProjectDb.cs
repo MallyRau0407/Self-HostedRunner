@@ -1,11 +1,11 @@
-﻿using System.Data;
+using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Project.Domain.IRepositories;
 
-namespace Project.Infrastructure.DataSources.SqlDB.Implementations
+namespace Project.Infrastructure.Data
 {
-    public sealed class ProjectDb : IProjectDb
+    internal sealed class ProjectDb : IProjectDb
     {
         private readonly IConfiguration _configuration;
 

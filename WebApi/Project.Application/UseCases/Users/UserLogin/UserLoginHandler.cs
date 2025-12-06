@@ -7,10 +7,10 @@ namespace Project.Application.UseCases.Users.UserLogin
 {
     public sealed class UserLoginHandler : IInteractor<UserLoginRequest, UserLoginResponse>
     {
-        private readonly IUsersRepository _usersRepository;
+        private readonly IUserRepository _usersRepository;
         private readonly ILogger<UserLoginHandler> _logger;
 
-        public UserLoginHandler(IUsersRepository usersRepository, ILogger<UserLoginHandler> logger)
+        public UserLoginHandler(IUserRepository usersRepository, ILogger<UserLoginHandler> logger)
         {
             _usersRepository = usersRepository;
             _logger = logger;

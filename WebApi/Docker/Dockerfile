@@ -15,7 +15,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # 1) Copiamos SOLO los .csproj usando LAS RUTAS REALES
-COPY WebApi/Common/Common.csproj WebApi/Common/
+COPY WebApi/ApiCommon/Common/Common/Common.csproj WebApi/ApiCommon/Common/Common/
 COPY WebApi/Project.Application/Project.Application.csproj WebApi/Project.Application/
 COPY WebApi/Project.Domain/Project.Domain.csproj WebApi/Project.Domain/
 COPY WebApi/Project.Infrastructure/Project.Infrastructure.csproj WebApi/Project.Infrastructure/

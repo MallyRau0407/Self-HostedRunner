@@ -1,10 +1,13 @@
+using System.Data;
+using Dapper;
+using System.Threading;
+using System.Threading.Tasks;
 using Project.Domain.Entities;
 using Project.Domain.IRepositories;
-using Project.Infrastructure.DataSources.SqlDB;
 
 namespace Project.Infrastructure.Repositories
 {
-    internal sealed class UsersRepository : IUsersRepository
+    internal sealed class UsersRepository : IUserRepository
     {
         private readonly IProjectDb _db;
 
@@ -26,11 +29,9 @@ namespace Project.Infrastructure.Repositories
                   AND UserActive = 1;
             ";
 
-            var count = await _db.ExecuteScalarAsync<int>(sql, new
-            {
-                UserName = username,
-                Password = password
-            }).ConfigureAwait(false);
+            using var conn = _db.GetConnection();
+            var cmd = new CommandDefinition(sql, new { UserName = username, Password = password }, cancellationToken: cancellationToken);
+            var count = await conn.ExecuteScalarAsync<int>(cmd).ConfigureAwait(false);
 
             return count > 0;
         }
@@ -38,7 +39,9 @@ namespace Project.Infrastructure.Repositories
         public async Task<bool> UsernameExistsAsync(string username, CancellationToken cancellationToken)
         {
             const string sql = @"SELECT COUNT(1) FROM Users WHERE UserName = @UserName;";
-            var count = await _db.ExecuteScalarAsync<int>(sql, new { UserName = username }).ConfigureAwait(false);
+            using var conn = _db.GetConnection();
+            var cmd = new CommandDefinition(sql, new { UserName = username }, cancellationToken: cancellationToken);
+            var count = await conn.ExecuteScalarAsync<int>(cmd).ConfigureAwait(false);
             return count > 0;
         }
 
@@ -50,12 +53,14 @@ namespace Project.Infrastructure.Repositories
                 SELECT CAST(SCOPE_IDENTITY() AS INT);
             ";
 
-            var id = await _db.ExecuteScalarAsync<int>(sql, new
+            using var conn = _db.GetConnection();
+            var cmd = new CommandDefinition(sql, new
             {
                 user.UserName,
                 user.PasswordHash,
                 user.FullName
-            }).ConfigureAwait(false);
+            }, cancellationToken: cancellationToken);
+            var id = await conn.ExecuteScalarAsync<int>(cmd).ConfigureAwait(false);
 
             return id;
         }
@@ -73,7 +78,9 @@ namespace Project.Infrastructure.Repositories
                 WHERE (UserId = @UserId OR IdUser = @UserId);
             ";
 
-            var user = await _db.QueryFirstAsync<User>(sql, new { UserId = userId }).ConfigureAwait(false);
+            using var conn = _db.GetConnection();
+            var cmd = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+            var user = await conn.QueryFirstOrDefaultAsync<User>(cmd).ConfigureAwait(false);
             return user;
         }
 
@@ -86,7 +93,9 @@ namespace Project.Infrastructure.Repositories
                   AND UserActive = 1;
             ";
 
-            var rows = await _db.ExecuteAsync(sql, new { UserId = userId }).ConfigureAwait(false);
+            using var conn = _db.GetConnection();
+            var cmd = new CommandDefinition(sql, new { UserId = userId }, cancellationToken: cancellationToken);
+            var rows = await conn.ExecuteAsync(cmd).ConfigureAwait(false);
             return rows > 0;
         }
 
@@ -98,7 +107,9 @@ namespace Project.Infrastructure.Repositories
             if (setClauses.Count == 0) return false;
 
             var sql = $@"UPDATE Users SET {string.Join(", ", setClauses)} WHERE (UserId = @UserId OR IdUser = @UserId) AND UserActive = 1;";
-            var rows = await _db.ExecuteAsync(sql, new { UserId = userId, FullName = fullName, PasswordHash = passwordHash }).ConfigureAwait(false);
+            using var conn = _db.GetConnection();
+            var cmd = new CommandDefinition(sql, new { UserId = userId, FullName = fullName, PasswordHash = passwordHash }, cancellationToken: cancellationToken);
+            var rows = await conn.ExecuteAsync(cmd).ConfigureAwait(false);
             return rows > 0;
         }
     }

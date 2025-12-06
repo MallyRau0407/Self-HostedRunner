@@ -1,8 +1,10 @@
 using Project.Domain.Entities;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Project.Domain.IRepositories
 {
-    public interface IUsersRepository
+    public interface IUserRepository
     {
         Task<bool> IsValidUserCredentialsAsync(string username, string password, CancellationToken cancellationToken);
         Task<bool> UsernameExistsAsync(string username, CancellationToken cancellationToken);

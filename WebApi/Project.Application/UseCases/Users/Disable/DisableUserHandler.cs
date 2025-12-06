@@ -7,10 +7,10 @@ namespace Project.Application.UseCases.Users.Disable
 {
     public sealed class DisableUserHandler : IInteractor<DisableUserRequest, UserCommandResponse>
     {
-        private readonly IUsersRepository _usersRepository;
+        private readonly IUserRepository _usersRepository;
         private readonly ILogger<DisableUserHandler> _logger;
 
-        public DisableUserHandler(IUsersRepository usersRepository, ILogger<DisableUserHandler> logger)
+        public DisableUserHandler(IUserRepository usersRepository, ILogger<DisableUserHandler> logger)
         {
             _usersRepository = usersRepository;
             _logger = logger;
@@ -18,28 +18,37 @@ namespace Project.Application.UseCases.Users.Disable
 
         public async Task<UserCommandResponse> Handle(DisableUserRequest request, CancellationToken cancellationToken)
         {
-            var existing = await _usersRepository.GetByIdAsync(request.UserId, cancellationToken).ConfigureAwait(false);
+            var existing = await _usersRepository.GetByIdAsync(request.UserId, cancellationToken);
+
             if (existing is null)
             {
-                _logger.LogWarning("Usuario {Id} no encontrado para deshabilitar", request.UserId);
                 return new FailureUserCommandResponse("Usuario no encontrado.", 404);
             }
 
-            if (!existing.UserActive)
+            if (!existing.IsActive)
             {
-                _logger.LogInformation("Usuario {Id} ya estaba deshabilitado", request.UserId);
-                return new SuccessUserCommandResponse(existing.Id, existing.UserName, existing.FullName, existing.UserActive, "El usuario ya estaba deshabilitado.");
+                return new SuccessUserCommandResponse(
+                    existing.Id,
+                    existing.UserName,
+                    existing.FullName,
+                    false,
+                    "El usuario ya estaba deshabilitado.");
             }
 
-            var disabled = await _usersRepository.DisableUserAsync(request.UserId, cancellationToken).ConfigureAwait(false);
+            var disabled = await _usersRepository.DisableUserAsync(request.UserId, cancellationToken);
+
             if (!disabled)
             {
-                _logger.LogWarning("No se pudo deshabilitar el usuario {Id}", request.UserId);
                 return new FailureUserCommandResponse("No se pudo deshabilitar el usuario.");
             }
 
-            _logger.LogInformation("Usuario {Id} deshabilitado", request.UserId);
-            return new SuccessUserCommandResponse(existing.Id, existing.UserName, existing.FullName, false, "Usuario deshabilitado correctamente.");
+            return new SuccessUserCommandResponse(
+                existing.Id,
+                existing.UserName,
+                existing.FullName,
+                false,
+                "Usuario deshabilitado correctamente."
+            );
         }
     }
 }
