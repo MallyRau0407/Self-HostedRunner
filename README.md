@@ -1,9 +1,9 @@
-# Equipo: Raptor Corp
-> Numero De Equipo: 00
-> Host: Raptor-Server
+# Equipo: OLI
+> Numero De Equipo: 08
+> Host: OLI-SERVER
 
 ## Integrantes / Roles
-- Rogelio Arriaga (Product Owner) / Líder de Proyecto
-- Rogelio Arriaga Full-Stack Developer (Programación)
-- Rogelio Arriaga DevOps (Operaciones e Infraestructura)
-- Rogelio Arriaga (QA) / Tester
+- Maritza Cruz Raudall / Jose Francisco Valencia Flugencio Líder de Proyecto
+- Maritza Cruz Raudall / Jose Francisco Valencia Flugencio Full-Stack Developer (Programación)
+- Maritza Cruz Raudall / Jose Francisco Valencia Flugencio DevOps (Operaciones e Infraestructura)
+- Maritza Cruz Raudall / Jose Francisco Valencia Flugencio (QA) / Tester
